@@ -4,7 +4,7 @@ const Edit = ({
   saveTitleToState,
   saveContentToState,
   updatePost,
-  cancleEdit,
+  cancelEdit,
 }) => {
   return (
     <>
@@ -29,8 +29,8 @@ const Edit = ({
         ></textarea>
 
         <button className="btn btn-success">Update Post</button>
-        <button className="btn btn-secondary" onClick={cancleEdit}>
-          Cancle
+        <button className="btn btn-secondary" onClick={cancelEdit}>
+          Cancel
         </button>
       </form>
     </>
