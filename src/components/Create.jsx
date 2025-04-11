@@ -5,6 +5,7 @@ const Create = ({
   saveTitleToState,
   saveContentToState,
   savePost,
+  cancleCreate,
 }) => {
   return (
     <>
@@ -27,6 +28,9 @@ const Create = ({
 
         <button className="btn btn-primary" onClick={savePost}>
           <AiOutlinePlus className="mb-1" /> Create Post
+        </button>
+        <button className="btn btn-secondary" onClick={cancleCreate}>
+          Cancle
         </button>
       </form>
     </>
