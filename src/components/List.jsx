@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Create from "./Create";
 import Post from "./Post";
-// import { v4 as uuidv4 } from "uuid";
+
 import Edit from "./Edit";
 
 const List = () => {
@@ -14,9 +14,6 @@ const List = () => {
   const [isCreate, setIsCreate] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [editId, setEditId] = useState("");
-
-  // useEffect(() => console.log(posts), [posts]);
-  // useEffect(() => console.log(editId), [editId]);
 
   const nextId = useRef(3);
   const getTitle = useRef();
@@ -43,14 +40,14 @@ const List = () => {
   function savePost(e) {
     e.preventDefault();
     const id = nextId.current;
-    // const id = uuidv4().toUpperCase().slice(0, 11).replace(/-/g, "");
+
     setPosts([...posts, { id, title, content }]);
     nextId.current += 1;
     getTitle.current.value = "";
     getContent.current.value = "";
     getTitle.current.focus();
-    // setTitle("");
-    // setContent("");
+    setTitle("");
+    setContent("");
     toggleCreate();
   }
 
@@ -70,8 +67,8 @@ const List = () => {
     setPosts(updatedPost);
     toggleEdit();
     setEditId();
-    // setTitle("");
-    // setContent("");
+    setTitle("");
+    setContent("");
   }
 
   function deletePost(id) {
