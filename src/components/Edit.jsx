@@ -4,36 +4,82 @@ const Edit = ({
   saveTitleToState,
   saveContentToState,
   updatePost,
-  cancelEdit,
+  cancleEdit,
+  getTitle,
+  getContent,
+  isDarkMode,
 }) => {
+  const formControlClass = isDarkMode
+    ? "form-control bg-dark text-white border-secondary"
+    : "form-control";
+
   return (
-    <>
-      <form
-        className="border text-center p-5 my-5 w-50 mx-auto"
-        onSubmit={updatePost}
-      >
-        <h1>Edit Post</h1>
-        <input
-          type="text"
-          placeholder="title"
-          className="form-control mb-3"
-          defaultValue={title}
-          onChange={saveTitleToState}
-        />
-
-        <textarea
-          placeholder="contents"
-          className="form-control mb-3"
-          defaultValue={content}
-          onChange={saveContentToState}
-        ></textarea>
-
-        <button className="btn btn-success">Update Post</button>
-        <button className="btn btn-secondary" onClick={cancelEdit}>
-          Cancel
-        </button>
-      </form>
-    </>
+    <div
+      className={`min-vh-100 py-5 ${
+        isDarkMode ? "bg-dark text-white" : "bg-light"
+      }`}
+    >
+      <div className="container">
+        <div className="row justify-content-center">
+          <div className="col-md-8 col-lg-6">
+            <div
+              className={`card ${
+                isDarkMode ? "bg-dark text-white border-secondary" : ""
+              } shadow`}
+            >
+              <div
+                className={`card-header ${
+                  isDarkMode ? "bg-secondary" : "bg-primary text-white"
+                }`}
+              >
+                <h3 className="card-title mb-0">Edit Post</h3>
+              </div>
+              <div className="card-body">
+                <form onSubmit={updatePost}>
+                  <div className="mb-3">
+                    <label className="form-label">Title</label>
+                    <input
+                      ref={getTitle}
+                      type="text"
+                      className={formControlClass}
+                      onChange={saveTitleToState}
+                      defaultValue={title}
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="form-label">Content</label>
+                    <textarea
+                      ref={getContent}
+                      className={formControlClass}
+                      rows="6"
+                      onChange={saveContentToState}
+                      defaultValue={content}
+                    ></textarea>
+                  </div>
+                  <div className="d-flex gap-2 justify-content-end">
+                    <button
+                      type="button"
+                      className={`btn ${
+                        isDarkMode
+                          ? "btn-outline-light"
+                          : "btn-outline-secondary"
+                      }`}
+                      onClick={cancleEdit}
+                    >
+                      Cancel
+                    </button>
+                    <button type="submit" className="btn btn-primary">
+                      Update Post
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
+
 export default Edit;

@@ -1,23 +1,34 @@
 import React, { useState, useEffect, useRef } from "react";
 import Create from "./Create";
 import Post from "./Post";
-
 import Edit from "./Edit";
+import axios from "axios";
+import { useTheme } from "../context/ThemeContext";
+import ThemeToggle from "./ThemeToggle";
 
 const List = () => {
+  const { isDarkMode } = useTheme();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [posts, setPosts] = useState([
-    { id: 1, title: "t1", content: "c1" },
-    { id: 2, title: "t2", content: "c2" },
-  ]);
+  const [posts, setPosts] = useState([]);
+  const [validateErr, setValidateErr] = useState([]);
+
   const [isCreate, setIsCreate] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [editId, setEditId] = useState("");
 
-  const nextId = useRef(3);
   const getTitle = useRef();
   const getContent = useRef();
+
+  useEffect(() => {
+    fetchPost();
+  }, []);
+
+  const fetchPost = async () => {
+    const blog = await axios.get("http://localhost:4000/blog");
+
+    setPosts(blog.data);
+  };
 
   function toggleCreate() {
     setIsCreate(!isCreate);
@@ -37,51 +48,61 @@ const List = () => {
   function saveContentToState(e) {
     setContent(e.target.value);
   }
-  function savePost(e) {
-    e.preventDefault();
-    const id = nextId.current;
 
-    setPosts([...posts, { id, title, content }]);
-    nextId.current += 1;
-    getTitle.current.value = "";
-    getContent.current.value = "";
-    getTitle.current.focus();
-    setTitle("");
-    setContent("");
-    toggleCreate();
-  }
+  const savePost = async (event) => {
+    event.preventDefault();
+    if (title && content) {
+      await axios.post("http://localhost:4000/blog", { title, content });
+      fetchPost();
 
-  function updatePost(e) {
-    e.preventDefault();
+      getTitle.current.value = "";
+      getContent.current.value = "";
+      toggleCreate();
 
-    const updatedPost = posts.map((post) => {
-      if (post.id === editId) {
-        return {
-          ...post,
-          title: title || post.title,
-          content: content || post.content,
-        };
-      }
-      return post;
-    });
-    setPosts(updatedPost);
-    toggleEdit();
-    setEditId();
-    setTitle("");
-    setContent("");
-  }
+      setValidateErr([]);
+    } else {
+      let err = [];
+      if (!title) err["title"] = "This field is required!";
+      if (!content) err["content"] = "This field is required!";
 
-  function deletePost(id) {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this post?"
-    );
-    if (confirmDelete) {
-      const modifiedPosts = posts.filter((post) => {
-        return post.id !== id;
-      });
-      setPosts(modifiedPosts);
+      setValidateErr(err);
     }
-  }
+  };
+
+  const updatePost = async (event) => {
+    event.preventDefault();
+    if (title && content) {
+      await axios.put(`http://localhost:4000/blog/${editId}`, {
+        title,
+        content,
+      });
+      fetchPost();
+
+      getTitle.current.value = " ";
+      getContent.current.value = " ";
+      setIsEdit(false);
+
+      setValidateErr([]);
+    } else {
+      let err = {};
+      if (!title) err["title"] = "This field is required!";
+      if (!content) err["content"] = "This field is required!";
+
+      setValidateErr(err);
+    }
+  };
+
+  const deletePost = async (id) => {
+    await axios.delete(`http://localhost:4000/blog/${id}`);
+    fetchPost();
+  };
+
+  const tableClass = isDarkMode ? "table table-dark" : "table";
+  const cardClass = isDarkMode ? "card bg-dark text-white" : "card";
+  const containerClass = isDarkMode
+    ? "bg-dark text-white min-vh-100"
+    : "bg-light min-vh-100";
+
   if (isCreate) {
     return (
       <>
@@ -92,6 +113,7 @@ const List = () => {
           saveContentToState={saveContentToState}
           savePost={savePost}
           cancleCreate={toggleCreate}
+          isDarkMode={isDarkMode}
         />
       </>
     );
@@ -107,51 +129,93 @@ const List = () => {
         saveContentToState={saveContentToState}
         updatePost={updatePost}
         cancleEdit={toggleEdit}
+        getTitle={getTitle}
+        getContent={getContent}
+        isDarkMode={isDarkMode}
       />
     );
   } else {
     return (
       <>
-        <div className=" text-center container my-5 p-5">
-          <h1 className="mb-5">All Posts</h1>
-          {!posts.length ? (
-            <div>
-              <h3 className="mb-5 text-danger">
-                There is nothing to see here!
-              </h3>
+        <div className={containerClass}>
+          <nav
+            className={`navbar ${
+              isDarkMode ? "navbar-dark bg-dark" : "navbar-light bg-primary"
+            } shadow-sm`}
+          >
+            <div className="container">
+              <span className="navbar-brand mb-0 h1">React Blog</span>
+              <ThemeToggle />
             </div>
-          ) : (
-            <table className="table">
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Title</th>
-                  <th scope="col">Content</th>
-                  <th scope="col">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {posts.map((post) => {
-                  return (
-                    <Post
-                      key={post.id}
-                      {...post}
-                      id={post.id}
-                      title={post.title}
-                      content={post.content}
-                      editPost={editPost}
-                      deletePost={deletePost}
-                    />
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
+          </nav>
 
-          <button className="btn btn-primary" onClick={toggleCreate}>
-            {" "}
-            Create New Post
-          </button>
+          <div className="container my-5 p-4">
+            <div className="row justify-content-center">
+              <div className="col-12">
+                <div className={cardClass}>
+                  <div
+                    className={`card-header ${
+                      isDarkMode ? "bg-secondary" : "bg-primary text-white"
+                    }`}
+                  >
+                    <h1 className="text-center mb-0">All Posts</h1>
+                  </div>
+                  <div className="card-body">
+                    {!posts.length ? (
+                      <div className="text-center py-4">
+                        <h3 className="text-danger">
+                          There is nothing to see here!
+                        </h3>
+                        <p className="">
+                          Create your first post to get started.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="table-responsive">
+                        <table className={`${tableClass} table-striped`}>
+                          <thead>
+                            <tr>
+                              <th scope="col">ID</th>
+                              <th scope="col">Title</th>
+                              <th scope="col">Content</th>
+                              <th scope="col">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {posts.map((post, index) => {
+                              return (
+                                <Post
+                                  key={post.id}
+                                  id={post.id}
+                                  displayId={index + 1}
+                                  title={post.title}
+                                  content={post.content}
+                                  editPost={editPost}
+                                  deletePost={deletePost}
+                                  isDarkMode={isDarkMode}
+                                />
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+
+                    <div className="text-center mt-4">
+                      <button
+                        className={`btn ${
+                          isDarkMode ? "btn-outline-light" : "btn-primary"
+                        } btn-lg`}
+                        onClick={toggleCreate}
+                      >
+                        Create New Post
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </>
     );
