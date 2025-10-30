@@ -25,17 +25,28 @@ const List = () => {
   }, []);
 
   const fetchPost = async () => {
-    const blog = await axios.get("http://localhost:4000/blog");
-
-    setPosts(blog.data);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("Authentication token not found.");
+      return;
+    }
+    await axios
+      .get("https://blog-three-gules-72.vercel.app/blog", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => setPosts(res.data))
+      .catch((err) => console.error(err));
   };
-
   function toggleCreate() {
     setIsCreate(!isCreate);
   }
+
   function toggleEdit() {
     setIsEdit(!isEdit);
   }
+
   function editPost(id) {
     toggleEdit();
     setEditId(id);
@@ -52,7 +63,24 @@ const List = () => {
   const savePost = async (event) => {
     event.preventDefault();
     if (title && content) {
-      await axios.post("http://localhost:4000/blog", { title, content });
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("Authentication token not found.");
+        return;
+      }
+      await axios.post(
+        "https://blog-three-gules-72.vercel.app/blog",
+        {
+          title,
+          content,
+        },
+
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       fetchPost();
 
       getTitle.current.value = "";
@@ -72,7 +100,12 @@ const List = () => {
   const updatePost = async (event) => {
     event.preventDefault();
     if (title && content) {
-      await axios.put(`http://localhost:4000/blog/${editId}`, {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("Authentication token not found.");
+        return;
+      }
+      await axios.put(`https://blog-three-gules-72.vercel.app/blog/${editId}`, {
         title,
         content,
       });
@@ -93,8 +126,23 @@ const List = () => {
   };
 
   const deletePost = async (id) => {
-    await axios.delete(`http://localhost:4000/blog/${id}`);
-    fetchPost();
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this post?"
+    );
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("Authentication token not found.");
+      return;
+    }
+    if (confirmed) {
+      await axios.delete(`https://blog-three-gules-72.vercel.app/blog/${id}`),
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+      fetchPost();
+    }
   };
 
   const tableClass = isDarkMode ? "table table-dark" : "table";
