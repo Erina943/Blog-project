@@ -32,11 +32,11 @@ const Login = ({ handleLogin }) => {
       );
       console.log("user", user);
 
-      const token = user.data.data.accessToken;
+      const token = user.data.accessToken;
       localStorage.setItem("token", token);
       // localStorage.setItem("email", email);
 
-      handleLogin();
+      // handleLogin();
 
       console.log("Login successful ");
       navigate("/list");

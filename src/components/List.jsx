@@ -105,10 +105,18 @@ const List = () => {
         console.error("Authentication token not found.");
         return;
       }
-      await axios.put(`https://blog-three-gules-72.vercel.app/blog/${editId}`, {
-        title,
-        content,
-      });
+      await axios.put(
+        `https://blog-three-gules-72.vercel.app/blog/${editId}`,
+        {
+          title,
+          content,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
       fetchPost();
 
       getTitle.current.value = " ";
@@ -135,12 +143,11 @@ const List = () => {
       return;
     }
     if (confirmed) {
-      await axios.delete(`https://blog-three-gules-72.vercel.app/blog/${id}`),
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        };
+      await axios.delete(`https://blog-three-gules-72.vercel.app/blog/${id}`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
       fetchPost();
     }
   };
