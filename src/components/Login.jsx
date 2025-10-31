@@ -23,12 +23,18 @@ const Login = ({ handleLogin }) => {
     }
 
     try {
-      await axios.post("https://blog-three-gules-72.vercel.app/user/login", {
-        email,
-        password,
-      });
+      const res = await axios.post(
+        "https://blog-three-gules-72.vercel.app/user/login",
+        {
+          email,
+          password,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
-      localStorage.setItem("token", res.data.accessToken);
+      localStorage.setItem("token", res.data.token);
       localStorage.setItem("email", res.data.email);
 
       if (handleLogin) handleLogin();
@@ -36,8 +42,20 @@ const Login = ({ handleLogin }) => {
       console.log("Login successful ");
       navigate("/list");
     } catch (err) {
-      console.log(err);
-      alert("Email or password incorrect");
+      if (err.response) {
+        console.error("Error response:", err.response);
+        alert(
+          `Server Error: ${err.response.status} - ${
+            err.response.data?.message || "Something went wrong"
+          }`
+        );
+      } else if (err.request) {
+        console.error("No response received:", err.request);
+        alert("No response from server. Check your network or CORS settings.");
+      } else {
+        console.error("Error setting up request:", err.message);
+        alert("Error setting up the request.");
+      }
     }
   };
 
