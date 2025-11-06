@@ -1,12 +1,10 @@
 import React, { useRef, useState } from "react";
 import axios from "axios";
-import { useTheme } from "../context/ThemeContext";
 import { useNavigate } from "react-router-dom";
 
-const Login = ({ handleLogin }) => {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const getEmail = useRef();
@@ -34,27 +32,20 @@ const Login = ({ handleLogin }) => {
 
       const token = user.data.accessToken;
       localStorage.setItem("token", token);
-      // localStorage.setItem("email", email);
-
-      // handleLogin();
+      localStorage.setItem("email", email);
 
       console.log("Login successful ");
       navigate("/list");
     } catch (err) {
       alert("email or password are incorrect!");
-      // console.error(err);
     }
   };
 
   return (
-    <div
-      className={`d-flex justify-content-center align-items-center vh-100 ${
-        isDark ? "bg-dark text-light" : "bg-light"
-      }`}
-    >
+    <div className={`d-flex justify-content-center align-items-center vh-100 `}>
       <form
         onSubmit={handleSubmit}
-        className={`p-4 rounded shadow ${isDark ? "bg-secondary" : "bg-white"}`}
+        className={`p-4 rounded shadow `}
         style={{ width: "320px" }}
       >
         <h2 className="text-center mb-4">Login</h2>
@@ -63,9 +54,7 @@ const Login = ({ handleLogin }) => {
           type="email"
           ref={getEmail}
           placeholder="Enter your Email"
-          className={`form-control mb-3 ${
-            isDark ? "bg-dark text-light border-light" : ""
-          }`}
+          className={`form-control mb-3 `}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -74,9 +63,7 @@ const Login = ({ handleLogin }) => {
           type="password"
           ref={getPassword}
           placeholder="Enter your Password"
-          className={`form-control mb-3 ${
-            isDark ? "bg-dark text-light border-light" : ""
-          }`}
+          className={`form-control mb-3 `}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
@@ -85,15 +72,15 @@ const Login = ({ handleLogin }) => {
           Login
         </button>
 
-        <div className="text-center mt-3">
-          {/* <button
-            type="button"
-            onClick={toggleTheme}
-            className="btn btn-outline-secondary btn-sm"
+        <p className="mt-3 text-center">
+          Don't have an account?{" "}
+          <span
+            onClick={() => navigate("/register")}
+            style={{ cursor: "pointer", color: "#0d6efd" }}
           >
-            Toggle Theme
-          </button> */}
-        </div>
+            Register here
+          </span>
+        </p>
       </form>
     </div>
   );
