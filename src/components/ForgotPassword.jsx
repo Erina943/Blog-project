@@ -7,6 +7,8 @@ const ForgotPassword = () => {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
+  const baseUrl = window.location.origin;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -15,7 +17,7 @@ const ForgotPassword = () => {
     try {
       const res = await axios.post(
         "https://blog-three-gules-72.vercel.app/user/forgot-password",
-        { email }
+        { email, resetLink: `${baseUrl}/reset-password/` }
       );
       setMessage("If that email exists, a reset link has been sent.");
     } catch (err) {
