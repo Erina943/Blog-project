@@ -6,13 +6,18 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    if (!username || !email || !password) {
+    if (!username || !email || !password || !confirmPassword) {
       return alert("All fields are required!");
+    }
+
+    if (password !== confirmPassword) {
+      return alert("Password do not match!");
     }
 
     try {
@@ -68,6 +73,14 @@ const Register = () => {
           className={`form-control mb-3 `}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <input
+          type="password"
+          placeholder="Confirm your Password"
+          className={`form-control mb-3 `}
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
         />
 
         <button type="submit" className="btn btn-success w-100">

@@ -68,6 +68,15 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
 
+        <div className="text-end mb-3">
+          <span
+            onClick={() => navigate("/forgot-password")}
+            style={{ cursor: "pointer", color: "#0d6efd", fontSize: "0.9rem" }}
+          >
+            Forgot Password?
+          </span>
+        </div>
+
         <button type="submit" className="btn btn-primary w-100">
           Login
         </button>
